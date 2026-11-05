@@ -94,12 +94,18 @@ impl Zfs {
     }
 
     fn open_target(&self, target: &str) -> Result<Hdl, String> {
-        let path = std::fs::canonicalize(target)
-            .map_or_else(|_| target.to_string(), |p| p.to_string_lossy().into());
+        let path = std::fs::canonicalize(target).map_or_else(
+            |_| target.to_string(),
+            |p| p.to_string_lossy().into(),
+        );
         let c_target = CString::new(path).map_err(|e| e.to_string())?;
 
         let zhp = unsafe {
-            (self.path_to_zhdl)(self.hdl, c_target.as_ptr(), ZFS_TYPE_FILESYSTEM)
+            (self.path_to_zhdl)(
+                self.hdl,
+                c_target.as_ptr(),
+                ZFS_TYPE_FILESYSTEM,
+            )
         };
 
         if zhp.is_null() {
@@ -118,11 +124,7 @@ impl Zfs {
         let read = |p: &str| -> Option<u64> {
             let mut v = 0u64;
             let rc = unsafe {
-                (self.get_quota)(
-                    zhp,
-                    CString::new(p).ok()?.as_ptr(),
-                    &mut v,
-                )
+                (self.get_quota)(zhp, CString::new(p).ok()?.as_ptr(), &mut v)
             };
             (rc == 0 && v > 0).then_some(v)
         };
@@ -148,11 +150,8 @@ impl Zfs {
             let vol_used = unsafe { (self.prop_get_int)(zhp, p_used) };
             let vol_quota = unsafe { (self.prop_get_int)(zhp, p_quota) };
 
-            let t = if vol_quota > 0 {
-                vol_quota
-            } else {
-                vol_used + vol_avail
-            };
+            let t =
+                if vol_quota > 0 { vol_quota } else { vol_used + vol_avail };
             let a = if vol_quota > 0 {
                 vol_quota.saturating_sub(vol_used).min(vol_avail)
             } else {
@@ -193,8 +192,9 @@ fn get_primary_group(user: &str) -> Option<String> {
             return None;
         }
         let gr = libc::getgrgid((*pw).pw_gid);
-        (!gr.is_null() && !(*gr).gr_name.is_null())
-            .then(|| CStr::from_ptr((*gr).gr_name).to_string_lossy().into_owned())
+        (!gr.is_null() && !(*gr).gr_name.is_null()).then(|| {
+            CStr::from_ptr((*gr).gr_name).to_string_lossy().into_owned()
+        })
     }
 }
 
