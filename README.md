@@ -2,6 +2,11 @@
 
 Fast, zero-shell ZFS `userquota` / `groupquota` & volume helper for Samba's `dfree command`, written in Rust using direct OpenZFS `libzfs` / `libzfs_core` ioctls.
 
+<p align="center">
+  <img src="output.webp" alt="Shouting in the Datacenter" /><br>
+  <a href="https://www.youtube.com/watch?v=tDacjrSCeq4">Original Video</a>
+</p>
+
 ## Why zfs-dfree?
 
 ### Apple Time Machine ZFS and Linux Quotas
