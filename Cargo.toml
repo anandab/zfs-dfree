@@ -1,0 +1,24 @@
+[package]
+name = "zfs-dfree"
+version = "0.1.0"
+edition = "2021"
+authors = ["Ananda B <anandab@users.noreply.github.com>"]
+description = "Fast, zero-shell ZFS user/group quota & volume helper for Samba dfree"
+license = "Apache-2.0"
+
+[dependencies]
+libc = "0.2"
+libloading = "0.8"
+
+[lints.rust]
+rust_2018_idioms = "warn"
+
+[lints.clippy]
+all = "warn"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true

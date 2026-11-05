@@ -1,0 +1,4 @@
+target/
+zfs-dfree
+*.o
+.DS_Store
